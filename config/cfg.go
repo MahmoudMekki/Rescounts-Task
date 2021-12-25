@@ -18,14 +18,14 @@ type JWT struct {
 	Secret string `json:"secret"`
 }
 
-func (cfg *Config) LoadConfig() {
-	var config Config
+func LoadConfig() (cfg Config) {
 	file, err := ioutil.ReadFile("config/devEnv.json")
 	if err != nil {
 		log.Panicln(err)
 	}
-	err = json.Unmarshal(file, &config)
+	err = json.Unmarshal(file, &cfg)
 	if err != nil {
 		log.Panicln(errors.New("can't marshal the config file"))
 	}
+	return cfg
 }
