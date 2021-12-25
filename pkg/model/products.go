@@ -5,5 +5,6 @@ type Product struct {
 	Name      string
 	Price     float64
 	Currency  string
+	PriceID   string
 	CreatedAt string
 }
