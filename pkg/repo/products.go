@@ -9,6 +9,7 @@ type ProductsRepo interface {
 	CreateProduct(product model.Product) (productID int64, err error)
 	UpdateProduct(product model.Product) error
 	GetProducts() (products []model.Product, err error)
+	GetProductByID(prodId int64) (product model.Product, err error)
 }
 
 func NewProductsRepo(db *sql.DB) ProductsRepo {
@@ -56,4 +57,13 @@ func (p *productsImp) GetProducts() (products []model.Product, err error) {
 		products = append(products, product)
 	}
 	return products, nil
+}
+
+func (p *productsImp) GetProductByID(prodId int64) (product model.Product, err error) {
+	err = p.DBEngine.QueryRow("select id,name,price,currency from rescounts.products where id=$1", prodId).
+		Scan(&product.ID, &product.Name, &product.Price, &product.Currency)
+	if err != nil {
+		return product, err
+	}
+	return product, nil
 }
