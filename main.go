@@ -29,9 +29,9 @@ func main() {
 	loginHandler := handler.NewLoginHandler(l, userRepo, tknService)
 
 	mux := http.NewServeMux()
-	mux.Handle("/user/signup", userSignupHandler)
-	mux.Handle("/admin/signup", adminSignupHandler)
-	mux.Handle("/login", loginHandler)
+	mux.Handle("/auth/user/signup", userSignupHandler)
+	mux.Handle("/auth/admin/signup", adminSignupHandler)
+	mux.Handle("/auth/login", loginHandler)
 	httpServer := &http.Server{
 		Addr:         ":9090",
 		ReadTimeout:  1 * time.Second,
