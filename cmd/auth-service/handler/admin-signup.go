@@ -16,21 +16,21 @@ import (
 	"time"
 )
 
-type CreateUserAccountHandler struct {
+type CreateAdminAccountHandler struct {
 	l            *log.Logger
 	userAccount  repo.UserAccountRepo
 	tokenService token.Service
 }
 
-func NewCreateUserAccountHandler(l *log.Logger, u repo.UserAccountRepo, tkn token.Service) *CreateUserAccountHandler {
-	return &CreateUserAccountHandler{
+func NewCreateAdminAccountHandler(l *log.Logger, u repo.UserAccountRepo, tkn token.Service) *CreateAdminAccountHandler {
+	return &CreateAdminAccountHandler{
 		l:            l,
 		userAccount:  u,
 		tokenService: tkn,
 	}
 }
 
-func (u *CreateUserAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (u *CreateAdminAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Not allowed method")
 		return
@@ -57,7 +57,7 @@ func (u *CreateUserAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.R
 		Password:  password.Hash([]byte(signUpRequest.Password)),
 		FirstName: signUpRequest.FirstName,
 		LastName:  signUpRequest.LastName,
-		IsAdmin:   false,
+		IsAdmin:   true,
 		CreatedAt: time.Now().UTC().String(),
 		UpdatedAt: time.Now().UTC().String(),
 	}
@@ -67,7 +67,7 @@ func (u *CreateUserAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.R
 		rhttp.RespondJSON(rw, http.StatusInternalServerError, err.Error())
 		return
 	}
-	token, err := u.tokenService.New(userID, 24*time.Hour)
+	token, err := u.tokenService.NewAdminToken(userID, 24*time.Hour)
 	if err != nil {
 		rhttp.RespondJSON(rw, http.StatusInternalServerError, err.Error())
 		return
@@ -76,7 +76,7 @@ func (u *CreateUserAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.R
 	rhttp.RespondJSON(rw, http.StatusCreated, resp)
 }
 
-func (u *CreateUserAccountHandler) validate(account data.CreateAccountRequest) (code int, err error) {
+func (u *CreateAdminAccountHandler) validate(account data.CreateAccountRequest) (code int, err error) {
 	if account.Email == "" || !regex.MatchEmail(account.Email) {
 		return codes.BadRequestArguments, errors.New("provided email is invalid")
 	}
