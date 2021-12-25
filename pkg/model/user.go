@@ -10,6 +10,7 @@ type UserAccount struct {
 	Password  string
 	FirstName string
 	LastName  string
+	IsAdmin   bool
 	CreatedAt string
 	UpdatedAt string
 }
