@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"github.com/MahmoudMekki/Rescounts-Task/cmd/auth-service/handler"
+	"github.com/MahmoudMekki/Rescounts-Task/config"
+	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
+	"github.com/MahmoudMekki/Rescounts-Task/pkg/token/jwt"
 	"log"
 	"net/http"
 	"os"
@@ -9,10 +13,21 @@ import (
 	"time"
 )
 
+var cfg config.Config
+
+func init() {
+	cfg.LoadConfig()
+}
 func main() {
 	l := log.New(os.Stdout, "[Rescounts-Task] ", log.LstdFlags)
-	mux := http.NewServeMux()
+	db := cfg.DataBase.OpenDB()
+	tknService := jwt.New(cfg.JWT.Secret)
+	userRepo := repo.NewUserAccountRepo(db)
 
+	userSignupHandler := handler.NewCreateUserAccountHandler(l, userRepo, tknService)
+
+	mux := http.NewServeMux()
+	mux.Handle("/signup", userSignupHandler)
 	httpServer := &http.Server{
 		Addr:         ":9090",
 		ReadTimeout:  1 * time.Second,
@@ -39,5 +54,6 @@ func main() {
 
 	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	l.Print("goodbye \n")
+	db.Close()
 	httpServer.Shutdown(tc)
 }
