@@ -1,9 +1,6 @@
 package jwt
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/token"
 
 	"fmt"
@@ -68,13 +65,6 @@ func (t Token) IsAdmin() bool {
 	return c.IsAdmin
 }
 
-// Encrypt --
-func (t Token) Encrypt(key []byte) string {
-	h := hmac.New(sha256.New, key)
-	h.Write([]byte(t.signedString))
-	return base64.StdEncoding.EncodeToString(h.Sum(nil))
-}
-
 // tokenService --
 type tokenService struct {
 	secretKey string
@@ -85,19 +75,6 @@ func New(secretKey string) token.Service {
 	return &tokenService{
 		secretKey: secretKey,
 	}
-}
-
-// Sign --
-func (s *tokenService) Sign(t token.Token) (token.Token, error) {
-	jwtToken, ok := t.(Token)
-	if !ok {
-		return nil, fmt.Errorf("invalid token type, only support jwt.Token")
-	}
-	claim, ok := jwtToken.Claims.(Claims)
-	if !ok {
-		return nil, fmt.Errorf("invalid claim type, only support jwt.Token")
-	}
-	return s.sign(&claim)
 }
 
 // New --

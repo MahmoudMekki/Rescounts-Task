@@ -10,7 +10,6 @@ type Token interface {
 	ExpireAt() int64
 	UserID() int64
 	IsAdmin() bool
-	Encrypt(key []byte) string
 }
 
 // Service --
