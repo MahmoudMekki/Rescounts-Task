@@ -39,21 +39,21 @@ func (login *LoginHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	userAccount,err :=login.userAccount.GetUserByEmail(loginRequest.Email)
-	if err !=nil{
-		rhttp.RespondJSON(rw,http.StatusInternalServerError,err.Error())
+	userAccount, err := login.userAccount.GetUserByEmail(loginRequest.Email)
+	if err != nil {
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, err.Error())
 		return
 	}
-	if userAccount.ID<=0{
-		rhttp.RespondJSON(rw,http.StatusNotFound,"this email not registered")
+	if userAccount.ID <= 0 {
+		rhttp.RespondJSON(rw, http.StatusNotFound, "this email not registered")
 		return
 	}
-	if !password.ComparePasswords(userAccount.Password,[]byte(loginRequest.Password)){
-		rhttp.RespondJSON(rw,http.StatusNotAcceptable,"Wrong Password")
+	if !password.ComparePasswords(userAccount.Password, []byte(loginRequest.Password)) {
+		rhttp.RespondJSON(rw, http.StatusNotAcceptable, "Wrong Password")
 		return
 	}
 
-	if userAccount.IsAdmin{
+	if userAccount.IsAdmin {
 		accessToken, err := login.tokenService.NewAdminToken(userAccount.ID, 24*time.Hour)
 		if err != nil {
 			rhttp.RespondJSON(rw, http.StatusInternalServerError, err.Error())
@@ -72,6 +72,3 @@ func (login *LoginHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) 
 	resp := data.CreateAccountResponse{UserID: userAccount.ID, AccessToken: accessToken.Signed()}
 	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }
-
-
-
