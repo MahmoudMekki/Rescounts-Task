@@ -16,7 +16,7 @@ import (
 var cfg config.Config
 
 func init() {
-	cfg.LoadConfig()
+	cfg = config.LoadConfig()
 }
 func main() {
 	l := log.New(os.Stdout, "[Rescounts-Task] ", log.LstdFlags)

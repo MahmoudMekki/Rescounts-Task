@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b7e6670-613f-43d4-8814-236142bac3bf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/auth-service/data/admin-account.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/auth-service/handler/admin-signup.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/auth-service/handler/create_user.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/auth-service/handler/create_user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kit/rhttp/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/kit/rhttp/response.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/cfg.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/cfg.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
