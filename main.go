@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	admin "github.com/MahmoudMekki/Rescounts-Task/cmd/admin-service/handler"
 	"github.com/MahmoudMekki/Rescounts-Task/cmd/auth-service/handler"
 	"github.com/MahmoudMekki/Rescounts-Task/config"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
+	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/token/jwt"
 	"log"
 	"net/http"
@@ -23,15 +25,21 @@ func main() {
 	db := cfg.DataBase.OpenDB()
 	tknService := jwt.New(cfg.JWT.Secret)
 	userRepo := repo.NewUserAccountRepo(db)
+	prodRepo := repo.NewProductsRepo(db)
+	stripeRepo := repo.NewStripeRepo(db)
+	stripeClient := stripe.NewStripe(cfg.JWT.Secret)
 
 	userSignupHandler := handler.NewCreateUserAccountHandler(l, userRepo, tknService)
 	adminSignupHandler := handler.NewCreateAdminAccountHandler(l, userRepo, tknService)
 	loginHandler := handler.NewLoginHandler(l, userRepo, tknService)
+	addProductHandler := admin.NewAddProductHandler(l, prodRepo, stripeClient, stripeRepo)
 
 	mux := http.NewServeMux()
 	mux.Handle("/auth/user/signup", userSignupHandler)
 	mux.Handle("/auth/admin/signup", adminSignupHandler)
 	mux.Handle("/auth/login", loginHandler)
+	mux.Handle("/product", addProductHandler)
+
 	httpServer := &http.Server{
 		Addr:         ":9090",
 		ReadTimeout:  1 * time.Second,
