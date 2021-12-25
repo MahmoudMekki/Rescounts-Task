@@ -33,12 +33,14 @@ func main() {
 	adminSignupHandler := handler.NewCreateAdminAccountHandler(l, userRepo, tknService)
 	loginHandler := handler.NewLoginHandler(l, userRepo, tknService)
 	addProductHandler := admin.NewAddProductHandler(l, prodRepo, stripeClient, stripeRepo)
+	updateProductHandler := admin.NewUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo)
 
 	mux := http.NewServeMux()
 	mux.Handle("/auth/user/signup", userSignupHandler)
 	mux.Handle("/auth/admin/signup", adminSignupHandler)
 	mux.Handle("/auth/login", loginHandler)
-	mux.Handle("/product", addProductHandler)
+	mux.Handle("/products", addProductHandler)
+	mux.Handle("/products/", updateProductHandler)
 
 	httpServer := &http.Server{
 		Addr:         ":9090",
