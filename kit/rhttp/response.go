@@ -19,21 +19,3 @@ func RespondJSON(w http.ResponseWriter, httpStatusCode int, payload interface{})
 	w.WriteHeader(httpStatusCode)
 	w.Write(data)
 }
-
-// RespondError -- makes the error tracking_resp with payload as json format
-func RespondError(w http.ResponseWriter, httpStatusCode int, message string) {
-	RespondJSON(w, httpStatusCode, map[string]string{"error": message})
-}
-
-// RespondMessage -- makes the message tracking_resp with payload as json format
-func RespondMessage(w http.ResponseWriter, httpStatusCode int, message string) {
-	RespondJSON(w, httpStatusCode, map[string]string{"message": message})
-}
-
-// RespondString -- makes the string
-func RespondString(w http.ResponseWriter, httpStatusCode int, message string) {
-	w.Header().Set("Content-Type", "text/plan; charset=utf-8")
-	w.Header().Set("Content-Length", strconv.Itoa(len([]byte(message))))
-	w.WriteHeader(httpStatusCode)
-	w.Write([]byte(message))
-}
