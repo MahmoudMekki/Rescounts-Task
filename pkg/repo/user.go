@@ -21,9 +21,9 @@ type userAcccountImp struct {
 
 func (u *userAcccountImp) GetUserByEmail(email string) (*model.UserAccount, error) {
 	var user model.UserAccount
-	row := u.DBEngine.QueryRow("select " +
-		"id,first_name,last_name,email,password,is_admin" +
-		" from rescounts.users where email=$1",email)
+	row := u.DBEngine.QueryRow("select "+
+		"id,first_name,last_name,email,password,is_admin"+
+		" from rescounts.users where email=$1", email)
 	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.IsAdmin)
 	if err != nil {
 		if err != sql.ErrNoRows {
@@ -35,9 +35,9 @@ func (u *userAcccountImp) GetUserByEmail(email string) (*model.UserAccount, erro
 
 func (u *userAcccountImp) GetUserByID(id int64) (*model.UserAccount, error) {
 	var user model.UserAccount
-	row := u.DBEngine.QueryRow("select " +
-		"id,first_name,last_name,email,password,is_admin" +
-		" from rescounts.users where email=$1",id)
+	row := u.DBEngine.QueryRow("select "+
+		"id,first_name,last_name,email,password,is_admin"+
+		" from rescounts.users where email=$1", id)
 	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.IsAdmin)
 	if err != nil {
 		if err != sql.ErrNoRows {
