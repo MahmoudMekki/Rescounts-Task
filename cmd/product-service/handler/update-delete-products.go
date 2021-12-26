@@ -51,20 +51,23 @@ func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter,
 	err := json.NewDecoder(req.Body).Decode(&updateProduct)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to marshal request body")
+		resp := data.UpdateProductResponse{Status: 0, Message: "Unable to marshal request body"}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
 	sprodID := req.FormValue("prod_id")
 	prodId, err := strconv.Atoi(sprodID)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusNotAcceptable, "bad product id")
+		resp := data.UpdateProductResponse{Status: 0, Message: "bad product id"}
+		rhttp.RespondJSON(rw, http.StatusNotAcceptable, resp)
 		return
 	}
 
 	prod, err := product.productRepo.GetProductByID(int64(prodId))
 	if err != nil {
-		rhttp.RespondJSON(rw, http.StatusNotFound, err.Error())
+		resp := data.UpdateProductResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusNotFound, resp)
 		return
 	}
 
@@ -79,20 +82,22 @@ func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter,
 	}
 	priceID, err := product.StripeClient.AddProduct(prod.Name, prod.Currency, prod.Price)
 	if err != nil {
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable add the new prod on stripe")
+		resp := data.UpdateProductResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		product.l.Println(err.Error())
 		return
 	}
 	prod.PriceID = priceID
 	err = product.productRepo.UpdateProduct(prod)
 	if err != nil {
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to update the product")
+		resp := data.UpdateProductResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		product.l.Println(err.Error())
 		return
 	}
 	resp := data.UpdateProductResponse{
-		Message:   "updated successfully",
-		ProductID: prod.ID,
+		Status: 1,
+		Data:   &data.UpdateProductData{ProductID: prod.ID},
 	}
 	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }
@@ -100,21 +105,24 @@ func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter,
 func (product *DeleteUpdateProductHandler) deleteProduct(rw http.ResponseWriter, req *http.Request) {
 	token, _ := product.tokenService.ExtractToken(req)
 	if !token.IsAdmin() {
-		rhttp.RespondJSON(rw, http.StatusUnauthorized, "Not allowed")
+		resp := data.DeleteProductResponse{Status: 0, Message: "Not allowed"}
+		rhttp.RespondJSON(rw, http.StatusUnauthorized, resp)
 		return
 	}
 	sProdID := req.FormValue("prod_id")
 	prodId, err := strconv.Atoi(sProdID)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusBadRequest, "bad product id")
+		resp := data.DeleteProductResponse{Status: 0, Message: "bad product id"}
+		rhttp.RespondJSON(rw, http.StatusBadRequest, resp)
 		return
 	}
 	err = product.productRepo.DeleteProductByID(int64(prodId))
 	if err != nil {
-		rhttp.RespondJSON(rw, http.StatusBadRequest, err.Error())
+		resp := data.DeleteProductResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusBadRequest, resp)
 		return
 	}
-	resp := data.DeleteProductResponse{Message: "deleted successfully", ProdID: int64(prodId)}
+	resp := data.DeleteProductResponse{Status: 1}
 	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }

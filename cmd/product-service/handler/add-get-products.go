@@ -42,59 +42,40 @@ func (product *GetAddProductHandler) ServeHTTP(rw http.ResponseWriter, req *http
 	}
 }
 
+// getProduct --
 func (product *GetAddProductHandler) getProducts(rw http.ResponseWriter, req *http.Request) {
-	var addProduct data.AddProductRequest
-	err := json.NewDecoder(req.Body).Decode(&addProduct)
+	prods, err := product.productRepo.GetProducts()
 	if err != nil {
-		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to marshal request body")
+		resp := data.GetProductsResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
-
-	priceID, err := product.StripeClient.AddProduct(addProduct.Name, addProduct.Currency, addProduct.Price)
-	if err != nil {
-		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to create product and price on stripe")
-		return
-	}
-	item := model.Product{
-		Name:      addProduct.Name,
-		Price:     addProduct.Price,
-		Currency:  addProduct.Currency,
-		PriceID:   priceID,
-		CreatedAt: time.Now().UTC().String(),
-	}
-	prodID, err := product.productRepo.CreateProduct(item)
-	if err != nil {
-		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to create product ")
-		return
-	}
-	resp := data.AddProductResponse{
-		Message:   "Created successfully",
-		ProductID: prodID,
-	}
-	rhttp.RespondJSON(rw, http.StatusCreated, resp)
+	resp := data.GetProductsResponse{Status: 1, Data: &data.GetProductsData{Products: prods}}
+	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }
 
+// addProduct --
 func (product *GetAddProductHandler) addProduct(rw http.ResponseWriter, req *http.Request) {
 	token, _ := product.tokenService.ExtractToken(req)
 	if !token.IsAdmin() {
-		rhttp.RespondJSON(rw, http.StatusUnauthorized, "Not allowed")
+		resp := data.AddProductResponse{Status: 0, Message: "Not allowed"}
+		rhttp.RespondJSON(rw, http.StatusUnauthorized, resp)
 		return
 	}
 	var addProduct data.AddProductRequest
 	err := json.NewDecoder(req.Body).Decode(&addProduct)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to marshal request body")
+		resp := data.AddProductResponse{Status: 0, Message: "Unable to marshal request body"}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
 
 	priceID, err := product.StripeClient.AddProduct(addProduct.Name, addProduct.Currency, addProduct.Price)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to create product and price on stripe")
+		resp := data.AddProductResponse{Status: 0, Message: "Unable to create product and price on stripe"}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
 	item := model.Product{
@@ -107,12 +88,13 @@ func (product *GetAddProductHandler) addProduct(rw http.ResponseWriter, req *htt
 	prodID, err := product.productRepo.CreateProduct(item)
 	if err != nil {
 		product.l.Println(err.Error())
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, "Unable to create product ")
+		resp := data.AddProductResponse{Status: 0, Message: "Unable to create product "}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
 	resp := data.AddProductResponse{
-		Message:   "Created successfully",
-		ProductID: prodID,
+		Status: 1,
+		Data:   &data.AddProductData{ProductID: prodID},
 	}
 	rhttp.RespondJSON(rw, http.StatusCreated, resp)
 }
