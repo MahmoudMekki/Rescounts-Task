@@ -9,6 +9,11 @@ type AddProductRequest struct {
 
 // AddProductResponse --
 type AddProductResponse struct {
-	Message   string `json:"message"`
-	ProductID int64  `json:"product_id"`
+	Status  int64           `json:"status"`
+	Data    *AddProductData `json:"data,omitempty"`
+	Message string          `json:"message,omitempty"`
+}
+
+type AddProductData struct {
+	ProductID int64 `json:"product_id"`
 }
