@@ -90,5 +90,18 @@ func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter,
 }
 
 func (product *DeleteUpdateProductHandler) deleteProduct(rw http.ResponseWriter, req *http.Request) {
-
+	sProdID := req.FormValue("prod_id")
+	prodId, err := strconv.Atoi(sProdID)
+	if err != nil {
+		product.l.Println(err.Error())
+		rhttp.RespondJSON(rw, http.StatusBadRequest, "bad product id")
+		return
+	}
+	err = product.productRepo.DeleteProductByID(int64(prodId))
+	if err != nil {
+		rhttp.RespondJSON(rw, http.StatusBadRequest, err.Error())
+		return
+	}
+	resp := data.DeleteProductResponse{Message: "deleted successfully", ProdID: int64(prodId)}
+	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }
