@@ -32,8 +32,8 @@ func main() {
 	userSignupHandler := auth.NewCreateUserAccountHandler(l, userRepo, tknService)
 	adminSignupHandler := auth.NewCreateAdminAccountHandler(l, userRepo, tknService)
 	loginHandler := auth.NewLoginHandler(l, userRepo, tknService)
-	GetAddProductHandler := admin.NewGetAddProductHandler(l, prodRepo, stripeClient, stripeRepo)
-	deleteUpdateProductHandler := admin.NewDeleteUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo)
+	GetAddProductHandler := admin.NewGetAddProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
+	deleteUpdateProductHandler := admin.NewDeleteUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
 	mw := auth.NewMiddleWare(l, tknService)
 
 	mux := http.NewServeMux()
