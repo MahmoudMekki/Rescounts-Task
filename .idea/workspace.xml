@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b7e6670-613f-43d4-8814-236142bac3bf" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/cmd/auth-service/handler/middleware.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/product-service/data/delete-products.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/product-service/data/delete-products.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/product-service/handler/update-delete-products.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/product-service/handler/update-delete-products.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/repo/products.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/repo/products.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/token/jwt/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/token/jwt/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/token/token.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +54,7 @@
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../go-moco" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">

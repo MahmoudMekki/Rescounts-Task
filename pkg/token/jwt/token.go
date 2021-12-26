@@ -2,6 +2,8 @@ package jwt
 
 import (
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/token"
+	"net/http"
+	"strings"
 
 	"fmt"
 
@@ -26,6 +28,11 @@ type Token struct {
 // Signed --
 func (t Token) Signed() string {
 	return t.signedString
+}
+
+// Verify --
+func (t Token) Verify() bool {
+	return t.Valid
 }
 
 // ExpireAt --
@@ -75,6 +82,19 @@ func New(secretKey string) token.Service {
 	return &tokenService{
 		secretKey: secretKey,
 	}
+}
+
+// ExtractToken --
+func (s *tokenService) ExtractToken(req *http.Request) (token.Token, bool) {
+	authHeader := strings.Split(req.Header.Get("Authorization"), "Bearer ")
+	if len(authHeader) != 2 {
+		return nil, false
+	}
+	token, err := s.Parse(authHeader[1])
+	if err != nil {
+		return nil, false
+	}
+	return token, true
 }
 
 // New --
