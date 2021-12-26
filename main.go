@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	admin "github.com/MahmoudMekki/Rescounts-Task/cmd/admin-service/handler"
-	"github.com/MahmoudMekki/Rescounts-Task/cmd/auth-service/handler"
+	auth "github.com/MahmoudMekki/Rescounts-Task/cmd/auth-service/handler"
+	admin "github.com/MahmoudMekki/Rescounts-Task/cmd/product-service/handler"
 	"github.com/MahmoudMekki/Rescounts-Task/config"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
@@ -29,18 +29,18 @@ func main() {
 	stripeRepo := repo.NewStripeRepo(db)
 	stripeClient := stripe.NewStripe(cfg.JWT.Secret)
 
-	userSignupHandler := handler.NewCreateUserAccountHandler(l, userRepo, tknService)
-	adminSignupHandler := handler.NewCreateAdminAccountHandler(l, userRepo, tknService)
-	loginHandler := handler.NewLoginHandler(l, userRepo, tknService)
-	addProductHandler := admin.NewAddProductHandler(l, prodRepo, stripeClient, stripeRepo)
-	updateProductHandler := admin.NewUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo)
+	userSignupHandler := auth.NewCreateUserAccountHandler(l, userRepo, tknService)
+	adminSignupHandler := auth.NewCreateAdminAccountHandler(l, userRepo, tknService)
+	loginHandler := auth.NewLoginHandler(l, userRepo, tknService)
+	GetAddProductHandler := admin.NewGetAddProductHandler(l, prodRepo, stripeClient, stripeRepo)
+	deleteUpdateProductHandler := admin.NewDeleteUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo)
 
 	mux := http.NewServeMux()
 	mux.Handle("/auth/user/signup", userSignupHandler)
 	mux.Handle("/auth/admin/signup", adminSignupHandler)
 	mux.Handle("/auth/login", loginHandler)
-	mux.Handle("/products", addProductHandler)
-	mux.Handle("/products/", updateProductHandler)
+	mux.Handle("/products", GetAddProductHandler)
+	mux.Handle("/products/", deleteUpdateProductHandler)
 
 	httpServer := &http.Server{
 		Addr:         ":9090",

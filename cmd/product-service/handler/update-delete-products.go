@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/MahmoudMekki/Rescounts-Task/cmd/admin-service/data"
+	"github.com/MahmoudMekki/Rescounts-Task/cmd/product-service/data"
 	"github.com/MahmoudMekki/Rescounts-Task/kit/rhttp"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
@@ -11,15 +11,15 @@ import (
 	"strconv"
 )
 
-type UpdateProductHandler struct {
+type DeleteUpdateProductHandler struct {
 	l            *log.Logger
 	productRepo  repo.ProductsRepo
 	StripeClient stripe.Stripe
 	StripeRepo   repo.StripeRepo
 }
 
-func NewUpdateProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo) *UpdateProductHandler {
-	return &UpdateProductHandler{
+func NewDeleteUpdateProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo) *DeleteUpdateProductHandler {
+	return &DeleteUpdateProductHandler{
 		l:            l,
 		productRepo:  p,
 		StripeClient: sc,
@@ -27,11 +27,18 @@ func NewUpdateProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Strip
 	}
 }
 
-func (product *UpdateProductHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPut {
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Not allowed method")
-		return
+func (product *DeleteUpdateProductHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodPut:
+		product.updateProduct(rw, req)
+	case http.MethodDelete:
+		product.deleteProduct(rw, req)
+	default:
+		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Method not allowed")
 	}
+}
+
+func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter, req *http.Request) {
 	var updateProduct data.UpdateProductRequest
 	err := json.NewDecoder(req.Body).Decode(&updateProduct)
 	if err != nil {
@@ -79,5 +86,22 @@ func (product *UpdateProductHandler) ServeHTTP(rw http.ResponseWriter, req *http
 		Message:   "updated successfully",
 		ProductID: prod.ID,
 	}
+	rhttp.RespondJSON(rw, http.StatusOK, resp)
+}
+
+func (product *DeleteUpdateProductHandler) deleteProduct(rw http.ResponseWriter, req *http.Request) {
+	sProdID := req.FormValue("prod_id")
+	prodId, err := strconv.Atoi(sProdID)
+	if err != nil {
+		product.l.Println(err.Error())
+		rhttp.RespondJSON(rw, http.StatusBadRequest, "bad product id")
+		return
+	}
+	err = product.productRepo.DeleteProductByID(int64(prodId))
+	if err != nil {
+		rhttp.RespondJSON(rw, http.StatusBadRequest, err.Error())
+		return
+	}
+	resp := data.DeleteProductResponse{Message: "deleted successfully", ProdID: int64(prodId)}
 	rhttp.RespondJSON(rw, http.StatusOK, resp)
 }

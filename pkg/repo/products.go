@@ -10,6 +10,7 @@ type ProductsRepo interface {
 	UpdateProduct(product model.Product) error
 	GetProducts() (products []model.Product, err error)
 	GetProductByID(prodId int64) (product model.Product, err error)
+	DeleteProductByID(prodId int64) (err error)
 }
 
 func NewProductsRepo(db *sql.DB) ProductsRepo {
@@ -66,4 +67,8 @@ func (p *productsImp) GetProductByID(prodId int64) (product model.Product, err e
 		return product, err
 	}
 	return product, nil
+}
+func (p *productsImp) DeleteProductByID(prodId int64) (err error) {
+	_, err = p.DBEngine.Exec("delete from rescounts.products where id=$1", prodId)
+	return err
 }
