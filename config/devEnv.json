@@ -11,5 +11,12 @@
   "jwt": {
     "secret":"mekki"
   },
-  "stripe":"test"
+  "stripe":"test",
+
+  "http": {
+    "address": ":9090",
+    "read_time_out_in_sec": 1,
+    "write_time_out_in_sec": 1,
+    "idle_time_out_in_sec": 120
+  }
 }

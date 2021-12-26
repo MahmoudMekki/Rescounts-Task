@@ -7,7 +7,8 @@ import (
 
 type StripeRepo interface {
 	CreateCustomer(customer model.StripeCustomer) error
-	IsCustomer(userID int64) (bool, string)
+	IsCustomer(userID int64) (string, bool)
+	UpdateCustomer(customer model.StripeCustomer) error
 }
 
 func NewStripeRepo(db *sql.DB) StripeRepo {
@@ -26,12 +27,19 @@ func (s *stripImp) CreateCustomer(customer model.StripeCustomer) error {
 	return nil
 }
 
-func (s *stripImp) IsCustomer(userID int64) (bool, string) {
+func (s *stripImp) IsCustomer(userID int64) (string, bool) {
 	var customer model.StripeCustomer
 	row := s.DBEngine.QueryRow("select * from stripe_customer where user_id=$1", userID)
 	err := row.Scan(&customer.UserID, &customer.CustomerID, &customer.CreatedAt)
 	if err != nil || customer.UserID <= 0 {
-		return false, ""
+		return "", false
 	}
-	return true, customer.CustomerID
+	return customer.CustomerID, true
+}
+func (s *stripImp) UpdateCustomer(customer model.StripeCustomer) error {
+	_, err := s.DBEngine.Exec("update stripe_customer set customer_id=$1 where user_id=$2", customer.CustomerID, customer.UserID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
