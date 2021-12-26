@@ -31,6 +31,10 @@ func NewAPurchaseHandler(l *log.Logger, sc stripe.Stripe, sp repo.StripeRepo, tk
 }
 
 func (user *PurchaseHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Method Not allowed")
+		return
+	}
 	tok, _ := user.tokenService.ExtractToken(req)
 	currentUser, err := user.userAccount.GetUserByID(tok.UserID())
 	if err != nil {

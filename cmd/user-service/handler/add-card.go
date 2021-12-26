@@ -32,6 +32,10 @@ func NewAddCardHandler(l *log.Logger, sc stripe.Stripe, sp repo.StripeRepo, tkn 
 }
 
 func (user *AddCardHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodPost {
+		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Method Not allowed")
+		return
+	}
 	tok, _ := user.tokenService.ExtractToken(req)
 	currentUser, err := user.userAccount.GetUserByID(tok.UserID())
 	if err != nil {
