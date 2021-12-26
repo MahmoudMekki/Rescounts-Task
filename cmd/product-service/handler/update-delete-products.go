@@ -6,6 +6,7 @@ import (
 	"github.com/MahmoudMekki/Rescounts-Task/kit/rhttp"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
+	"github.com/MahmoudMekki/Rescounts-Task/pkg/token"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,14 +17,16 @@ type DeleteUpdateProductHandler struct {
 	productRepo  repo.ProductsRepo
 	StripeClient stripe.Stripe
 	StripeRepo   repo.StripeRepo
+	tokenService token.Service
 }
 
-func NewDeleteUpdateProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo) *DeleteUpdateProductHandler {
+func NewDeleteUpdateProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo, tkn token.Service) *DeleteUpdateProductHandler {
 	return &DeleteUpdateProductHandler{
 		l:            l,
 		productRepo:  p,
 		StripeClient: sc,
 		StripeRepo:   sp,
+		tokenService: tkn,
 	}
 }
 
@@ -39,6 +42,11 @@ func (product *DeleteUpdateProductHandler) ServeHTTP(rw http.ResponseWriter, req
 }
 
 func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter, req *http.Request) {
+	token, _ := product.tokenService.ExtractToken(req)
+	if !token.IsAdmin() {
+		rhttp.RespondJSON(rw, http.StatusUnauthorized, "Not allowed")
+		return
+	}
 	var updateProduct data.UpdateProductRequest
 	err := json.NewDecoder(req.Body).Decode(&updateProduct)
 	if err != nil {
@@ -90,6 +98,11 @@ func (product *DeleteUpdateProductHandler) updateProduct(rw http.ResponseWriter,
 }
 
 func (product *DeleteUpdateProductHandler) deleteProduct(rw http.ResponseWriter, req *http.Request) {
+	token, _ := product.tokenService.ExtractToken(req)
+	if !token.IsAdmin() {
+		rhttp.RespondJSON(rw, http.StatusUnauthorized, "Not allowed")
+		return
+	}
 	sProdID := req.FormValue("prod_id")
 	prodId, err := strconv.Atoi(sProdID)
 	if err != nil {

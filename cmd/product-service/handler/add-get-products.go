@@ -7,6 +7,7 @@ import (
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/model"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
+	"github.com/MahmoudMekki/Rescounts-Task/pkg/token"
 	"log"
 	"net/http"
 	"time"
@@ -17,14 +18,16 @@ type GetAddProductHandler struct {
 	productRepo  repo.ProductsRepo
 	StripeClient stripe.Stripe
 	StripeRepo   repo.StripeRepo
+	tokenService token.Service
 }
 
-func NewGetAddProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo) *GetAddProductHandler {
+func NewGetAddProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo, tkn token.Service) *GetAddProductHandler {
 	return &GetAddProductHandler{
 		l:            l,
 		productRepo:  p,
 		StripeClient: sc,
 		StripeRepo:   sp,
+		tokenService: tkn,
 	}
 }
 
@@ -75,6 +78,11 @@ func (product *GetAddProductHandler) getProducts(rw http.ResponseWriter, req *ht
 }
 
 func (product *GetAddProductHandler) addProduct(rw http.ResponseWriter, req *http.Request) {
+	token, _ := product.tokenService.ExtractToken(req)
+	if !token.IsAdmin() {
+		rhttp.RespondJSON(rw, http.StatusUnauthorized, "Not allowed")
+		return
+	}
 	var addProduct data.AddProductRequest
 	err := json.NewDecoder(req.Body).Decode(&addProduct)
 	if err != nil {
