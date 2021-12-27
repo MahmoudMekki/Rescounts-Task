@@ -31,10 +31,7 @@ func NewCreateAdminAccountHandler(l *log.Logger, u repo.UserAccountRepo, tkn tok
 }
 
 func (u *CreateAdminAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Not allowed method")
-		return
-	}
+
 	var signUpRequest data.CreateAccountRequest
 	err := json.NewDecoder(req.Body).Decode(&signUpRequest)
 	if err != nil {

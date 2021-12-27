@@ -59,7 +59,7 @@ func (product *AddProductHandler) ServeHTTP(rw http.ResponseWriter, req *http.Re
 		Price:     addProduct.Price,
 		Currency:  addProduct.Currency,
 		PriceID:   priceID,
-		CreatedAt: time.Now().UTC().String(),
+		CreatedAt: time.Now(),
 	}
 	prodID, err := product.productRepo.CreateProduct(item)
 	if err != nil {

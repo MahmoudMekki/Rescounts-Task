@@ -1,7 +1,9 @@
 package model
 
+import "time"
+
 type StripeCustomer struct {
 	UserID     int64
 	CustomerID string
-	CreatedAt  string
+	CreatedAt  time.Time
 }

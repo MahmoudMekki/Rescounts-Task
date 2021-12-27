@@ -27,10 +27,6 @@ func NewLoginHandler(l *log.Logger, u repo.UserAccountRepo, tkn token.Service) *
 }
 
 func (login *LoginHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Not allowed method")
-		return
-	}
 	var loginRequest data.LoginRequest
 	err := json.NewDecoder(req.Body).Decode(&loginRequest)
 	if err != nil {

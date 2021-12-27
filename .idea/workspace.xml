@@ -5,16 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b7e6670-613f-43d4-8814-236142bac3bf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/product-service/handler/add-product.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/product-service/handler/delete-product.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/product-service/handler/add-get-products.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/product-service/handler/get-products.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/product-service/handler/update-delete-products.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/product-service/handler/update-products.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/auth-service/handler/admin-signup.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/auth-service/handler/admin-signup.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/auth-service/handler/create_user.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/auth-service/handler/create_user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/auth-service/handler/login.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/auth-service/handler/login.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/product-service/handler/add-product.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/product-service/handler/add-product.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/user-service/handler/add-card.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/user-service/handler/add-card.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/user-service/handler/purhase.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/user-service/handler/purhase.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/devEnv.json" beforeDir="false" afterPath="$PROJECT_DIR$/config/devEnv.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/model/products.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/model/products.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/model/stripe.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/model/stripe.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/repo/products.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/repo/products.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/repo/stripe.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/repo/stripe.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +71,27 @@
       <recent name="$PROJECT_DIR$/cmd/auth-service/data" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="Rescounts-Task" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/MahmoudMekki/Rescounts-Task" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="Rescounts-Task" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/MahmoudMekki/Rescounts-Task" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -82,6 +106,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />

@@ -36,7 +36,7 @@ func (user *AddCardHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	currentUser, err := user.userAccount.GetUserByID(tok.UserID())
 	if err != nil {
 		resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 		return
 	}
 	var cardData data.AddCardRequest
@@ -44,7 +44,7 @@ func (user *AddCardHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	if err != nil {
 		user.l.Println(err.Error())
 		resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 		return
 	}
 	cardTok, err := user.StripeClient.CreateCardToken(
@@ -56,35 +56,44 @@ func (user *AddCardHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	if err != nil {
 		user.l.Println(err.Error())
 		resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 		return
 	}
-	cus, existed := user.StripeRepo.IsCustomer(currentUser.ID)
+	cus, existed,err := user.StripeRepo.IsCustomer(currentUser.ID)
+	if err !=nil{
+		user.l.Println(err.Error())
+		resp := data.AddCardResponse{Status: 0, Message: err.Error()}
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
+		return
+	}
 	if !existed {
 		cusID, err := user.StripeClient.CreateCustomer(currentUser.Email, cardTok, currentUser.FirstName)
 		if err != nil {
+			user.l.Println(err.Error())
 			resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-			rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+			rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 			return
 		}
-		stripeCustomer := model.StripeCustomer{UserID: tok.UserID(), CustomerID: cusID, CreatedAt: time.Now().UTC().String()}
+		stripeCustomer := model.StripeCustomer{UserID: tok.UserID(), CustomerID: cusID, CreatedAt: time.Now()}
 		err = user.StripeRepo.CreateCustomer(stripeCustomer)
 		if err != nil {
+			user.l.Println(err.Error())
+
 			resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-			rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+			rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 			return
 		}
 		resp := data.AddCardResponse{Status: 1}
-		rhttp.RespondJSON(rw, http.StatusAccepted, resp)
+		rhttp.RespondJSON(rw, http.StatusAccepted, &resp)
 		return
 	}
 	err = user.StripeClient.UpdateCustomer(cus, cardTok)
 	if err != nil {
 		resp := data.AddCardResponse{Status: 0, Message: err.Error()}
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
+		rhttp.RespondJSON(rw, http.StatusInternalServerError, &resp)
 		return
 	}
 	resp := data.AddCardResponse{Status: 1}
-	rhttp.RespondJSON(rw, http.StatusAccepted, resp)
+	rhttp.RespondJSON(rw, http.StatusAccepted, &resp)
 	return
 }

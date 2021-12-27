@@ -50,7 +50,7 @@ func (p *productsImp) GetProducts() (products []model.Product, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		var product model.Product
-		err = rows.Scan(&product.ID, &product.Name, &product.Price, &product.Currency, &product.PriceID)
+		err = rows.Scan(&product.ID, &product.Name, &product.Price, &product.Currency)
 
 		if err != nil {
 			return nil, err

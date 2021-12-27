@@ -48,7 +48,13 @@ func (user *PurchaseHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 		rhttp.RespondJSON(rw, http.StatusBadRequest, resp)
 		return
 	}
-	cus, existed := user.StripeRepo.IsCustomer(currentUser.ID)
+	cus, existed,err := user.StripeRepo.IsCustomer(currentUser.ID)
+	if err != nil {
+		user.l.Println(err.Error())
+		resp := data.PurchaseResponse{Status: 0, Message: "bad product id"}
+		rhttp.RespondJSON(rw, http.StatusBadRequest, resp)
+		return
+	}
 	if !existed {
 		resp := data.PurchaseResponse{Status: 0, Message: "not a customer"}
 		rhttp.RespondJSON(rw, http.StatusBadRequest, resp)

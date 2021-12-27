@@ -33,7 +33,7 @@ func main() {
 	userRepo := repo.NewUserAccountRepo(db)
 	prodRepo := repo.NewProductsRepo(db)
 	stripeRepo := repo.NewStripeRepo(db)
-	stripeClient := stripe.NewStripe(cfg.JWT.Secret)
+	stripeClient := stripe.NewStripe(cfg.StripeKey)
 	mw := auth.NewMiddleWare(l, tknService)
 
 	//initiating handlers
@@ -56,7 +56,7 @@ func main() {
 	s.Handle("/products/{prod_id}", mw.MW(updateProdHandler)).Methods(http.MethodPut)
 	s.Handle("/products/{prod_id}", mw.MW(deleteProdHandler)).Methods(http.MethodDelete)
 	s.Handle("/user/purchase", mw.MW(addCardHandler)).Methods(http.MethodPost)
-	s.Handle("user/purchase/{prod_id}", mw.MW(purchaseHandler)).Methods(http.MethodGet)
+	s.Handle("/user/purchase/{prod_id}", mw.MW(purchaseHandler)).Methods(http.MethodGet)
 
 	httpServer := &http.Server{
 		Addr:         cfg.Http.Address,

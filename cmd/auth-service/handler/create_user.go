@@ -31,10 +31,6 @@ func NewCreateUserAccountHandler(l *log.Logger, u repo.UserAccountRepo, tkn toke
 }
 
 func (u *CreateUserAccountHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Not allowed method")
-		return
-	}
 	var signUpRequest data.CreateAccountRequest
 	err := json.NewDecoder(req.Body).Decode(&signUpRequest)
 	if err != nil {

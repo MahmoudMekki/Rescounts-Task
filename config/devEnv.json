@@ -11,7 +11,7 @@
   "jwt": {
     "secret":"mekki"
   },
-  "stripe":"test",
+  "stripe":"sk_test_BOTxDlunbddzEaYBWVmyTw0l",
 
   "http": {
     "address": ":9090",
