@@ -6,6 +6,7 @@ import (
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/token"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
@@ -31,10 +32,6 @@ func NewAPurchaseHandler(l *log.Logger, sc stripe.Stripe, sp repo.StripeRepo, tk
 }
 
 func (user *PurchaseHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Method Not allowed")
-		return
-	}
 	tok, _ := user.tokenService.ExtractToken(req)
 	currentUser, err := user.userAccount.GetUserByID(tok.UserID())
 	if err != nil {
@@ -42,8 +39,9 @@ func (user *PurchaseHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
 		return
 	}
-	sprodID := req.FormValue("prod_id")
-	prodId, err := strconv.Atoi(sprodID)
+	vars := mux.Vars(req)
+	sProdID := vars["prod_id"]
+	prodId, err := strconv.Atoi(sProdID)
 	if err != nil {
 		user.l.Println(err.Error())
 		resp := data.PurchaseResponse{Status: 0, Message: "bad product id"}
