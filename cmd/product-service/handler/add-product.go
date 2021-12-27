@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type GetAddProductHandler struct {
+type AddProductHandler struct {
 	l            *log.Logger
 	productRepo  repo.ProductsRepo
 	StripeClient stripe.Stripe
@@ -21,8 +21,8 @@ type GetAddProductHandler struct {
 	tokenService token.Service
 }
 
-func NewGetAddProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo, tkn token.Service) *GetAddProductHandler {
-	return &GetAddProductHandler{
+func NewAddProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Stripe, sp repo.StripeRepo, tkn token.Service) *AddProductHandler {
+	return &AddProductHandler{
 		l:            l,
 		productRepo:  p,
 		StripeClient: sc,
@@ -31,31 +31,7 @@ func NewGetAddProductHandler(l *log.Logger, p repo.ProductsRepo, sc stripe.Strip
 	}
 }
 
-func (product *GetAddProductHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodPost:
-		product.addProduct(rw, req)
-	case http.MethodGet:
-		product.getProducts(rw, req)
-	default:
-		rhttp.RespondJSON(rw, http.StatusMethodNotAllowed, "Method not allowed")
-	}
-}
-
-// getProduct --
-func (product *GetAddProductHandler) getProducts(rw http.ResponseWriter, req *http.Request) {
-	prods, err := product.productRepo.GetProducts()
-	if err != nil {
-		resp := data.GetProductsResponse{Status: 0, Message: err.Error()}
-		rhttp.RespondJSON(rw, http.StatusInternalServerError, resp)
-		return
-	}
-	resp := data.GetProductsResponse{Status: 1, Data: &data.GetProductsData{Products: prods}}
-	rhttp.RespondJSON(rw, http.StatusOK, resp)
-}
-
-// addProduct --
-func (product *GetAddProductHandler) addProduct(rw http.ResponseWriter, req *http.Request) {
+func (product *AddProductHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	token, _ := product.tokenService.ExtractToken(req)
 	if !token.IsAdmin() {
 		resp := data.AddProductResponse{Status: 0, Message: "Not allowed"}

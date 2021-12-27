@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	auth "github.com/MahmoudMekki/Rescounts-Task/cmd/auth-service/handler"
-	admin "github.com/MahmoudMekki/Rescounts-Task/cmd/product-service/handler"
+	prod "github.com/MahmoudMekki/Rescounts-Task/cmd/product-service/handler"
 	user "github.com/MahmoudMekki/Rescounts-Task/cmd/user-service/handler"
 	"github.com/MahmoudMekki/Rescounts-Task/config"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/repo"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/stripe"
 	"github.com/MahmoudMekki/Rescounts-Task/pkg/token/jwt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +27,8 @@ func init() {
 func main() {
 
 	db := cfg.DataBase.OpenDB()
+
+	// initiating the internal services
 	tknService := jwt.New(cfg.JWT.Secret)
 	userRepo := repo.NewUserAccountRepo(db)
 	prodRepo := repo.NewProductsRepo(db)
@@ -33,29 +36,34 @@ func main() {
 	stripeClient := stripe.NewStripe(cfg.JWT.Secret)
 	mw := auth.NewMiddleWare(l, tknService)
 
+	//initiating handlers
 	userSignupHandler := auth.NewCreateUserAccountHandler(l, userRepo, tknService)
 	adminSignupHandler := auth.NewCreateAdminAccountHandler(l, userRepo, tknService)
 	loginHandler := auth.NewLoginHandler(l, userRepo, tknService)
-	GetAddProductHandler := admin.NewGetAddProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
-	deleteUpdateProductHandler := admin.NewDeleteUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
+	getProdsHandler := prod.NewGetProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
+	addProdHadnler := prod.NewAddProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
+	updateProdHandler := prod.NewUpdateProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
+	deleteProdHandler := prod.NewDeleteProductHandler(l, prodRepo, stripeClient, stripeRepo, tknService)
 	addCardHandler := user.NewAddCardHandler(l, stripeClient, stripeRepo, tknService, userRepo)
-	puchaseHandler := user.NewAPurchaseHandler(l, stripeClient, stripeRepo, tknService, userRepo, prodRepo)
+	purchaseHandler := user.NewAPurchaseHandler(l, stripeClient, stripeRepo, tknService, userRepo, prodRepo)
 
-	mux := http.NewServeMux()
-	mux.Handle("/auth/user/signup", userSignupHandler)
-	mux.Handle("/auth/admin/signup", adminSignupHandler)
-	mux.Handle("/auth/login", loginHandler)
-	mux.Handle("/products", mw.MW(GetAddProductHandler))
-	mux.Handle("/products/", mw.MW(deleteUpdateProductHandler))
-	mux.Handle("/user/purchase", mw.MW(addCardHandler))
-	mux.Handle("/user/purchase/", mw.MW(puchaseHandler))
+	s := mux.NewRouter()
+	s.Handle("/auth/user/signup", userSignupHandler).Methods(http.MethodPost)
+	s.Handle("/auth/admin/signup", adminSignupHandler).Methods(http.MethodPost)
+	s.Handle("/auth/login", loginHandler).Methods(http.MethodGet)
+	s.Handle("/products", getProdsHandler).Methods(http.MethodGet)
+	s.Handle("/products", mw.MW(addProdHadnler)).Methods(http.MethodPost)
+	s.Handle("/products/{prod_id}", mw.MW(updateProdHandler)).Methods(http.MethodPut)
+	s.Handle("/products/{prod_id}", mw.MW(deleteProdHandler)).Methods(http.MethodDelete)
+	s.Handle("/user/purchase", mw.MW(addCardHandler)).Methods(http.MethodPost)
+	s.Handle("user/purchase/{prod_id}", mw.MW(purchaseHandler)).Methods(http.MethodGet)
 
 	httpServer := &http.Server{
 		Addr:         cfg.Http.Address,
 		ReadTimeout:  time.Duration(cfg.Http.ReadTimeOutInSec) * time.Second,
 		WriteTimeout: time.Duration(cfg.Http.WriteTimeOutInSec) * time.Second,
 		IdleTimeout:  time.Duration(cfg.Http.IdleTimeOutInSec) * time.Second,
-		Handler:      mux,
+		Handler:      s,
 	}
 
 	//Go routine for gracefully shutdown the server
